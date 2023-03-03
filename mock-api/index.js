@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 
 const ERROR_RATE = 0.1;
-const RESPONSE_DELAY_START = 10;
-const RESPONSE_DELAY_END = 1500;
-const random = (min = RESPONSE_DELAY_START, max = RESPONSE_DELAY_END) => Math.floor(Math.random() * (max - min)) + min;
+const RESPONSE_DELAY_MIN = 10;
+const RESPONSE_DELAY_MAX = 1500;
+const getRandomDelay = (min = RESPONSE_DELAY_MIN, max = RESPONSE_DELAY_MAX) => Math.floor(Math.random() * (max - min)) + min;
 
 const countries = JSON.parse(fs.readFileSync(
   path.join('./mock-api/', "countries.json")
@@ -33,7 +33,7 @@ function simulateErrors(req, res, next) {
   next();
 }
 function delayResponse(req, res, next) {
-  setTimeout(next, random());
+  setTimeout(next, getRandomDelay());
 }
 
 app.use("/flags", express.static("mock-api/flags"));
