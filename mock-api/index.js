@@ -25,22 +25,22 @@ function getCountries(query, page, page_size) {
 
   return country_list.slice((page - 1) * page_size, page * page_size);
 }
+function simulateErrors(req, res, next) {
+  if (Math.random() <= ERROR_RATE) {
+    throw new Error("Something went wrong");
+  }
+
+  next();
+}
+function delayResponse(req, res, next) {
+  setTimeout(next, random());
+}
 
 app.use("/flags", express.static("mock-api/flags"));
-
 app.use("/countries", [
-  (req, res, next) => {
-    if (Math.random() <= ERROR_RATE) {
-      throw new Error("Something went wrong");
-    }
-
-    next();
-  },
-  (req, res, next) => {
-    setTimeout(next, random());
-  }
+  simulateErrors,
+  delayResponse
 ]);
-
 app.get("/countries", (req, res) => {
   // get the query parameters and set defaults if not defined
   const { query = "", page = 1, page_size = 10 } = req.query;
